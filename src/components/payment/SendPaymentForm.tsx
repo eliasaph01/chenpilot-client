@@ -103,8 +103,9 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
   const handleMemoTypeChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     await memoTypeRegistration.onChange(event);
     clearErrors(['memo', 'memoType']);
-    setValue('memo', '', { shouldValidate: false });
-    if (event.target.value !== 'none') {
+    if (event.target.value === 'none') {
+      setValue('memo', '', { shouldValidate: false });
+    } else {
       await trigger(['memo', 'memoType']);
     }
   };
