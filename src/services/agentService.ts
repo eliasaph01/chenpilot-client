@@ -25,6 +25,7 @@ import {
   AgentActionStatus
 } from '@/types/agent';
 import agentConfig from '@/config/agent';
+import { CLIENT_VERSION } from '@/config/version';
 import {
   SseParser,
   StreamTextAccumulator,
@@ -540,6 +541,7 @@ class AgentService {
     return {
       isOnline: health ? health.status !== 'unhealthy' : false,
       health,
+      clientVersion: CLIENT_VERSION,
       ...metrics,
     };
   }

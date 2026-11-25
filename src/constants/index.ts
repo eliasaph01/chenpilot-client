@@ -1,4 +1,5 @@
 // Application constants for ChenPilot client
+import { CLIENT_VERSION } from '@/config/version';
 
 // API Configuration
 export const API_CONFIG = {
@@ -20,7 +21,7 @@ export const RETRY_CONFIG = {
 // Application Information
 export const APP_CONFIG = {
   NAME: 'ChenPilot',
-  VERSION: '1.0.0',
+  VERSION: CLIENT_VERSION,
   DESCRIPTION: 'AI Co-Pilot for Cross-Chain DeFi and Payments',
   AUTHOR: 'ChenPilot Team',
 } as const;

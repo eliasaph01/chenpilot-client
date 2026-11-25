@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sendPaymentSchema, validateSendPayment, sanitizePaymentInput } from '@/utils/validation';
 import { SendPaymentRequest, ContactSelection } from '@/types';
+import { TOKEN_TYPES } from '@/constants';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -27,9 +28,16 @@ import { LiveAnnouncer, SILENT_TOAST, type Announcement } from '@/components/ui/
 interface SendPaymentFormProps {
   onSubmit: (data: SendPaymentRequest) => Promise<void>;
   contacts: any[];
+  senderAddress?: string;
+  initialContactId?: string;
+  isOnline?: boolean;
   isLoading?: boolean;
   defaultTokenType?: 'XLM' | 'USDC' | 'USDT' | 'BTC' | 'ETH' | 'AQUA';
 }
+
+const SUPPORTED_ASSETS = Object.values(TOKEN_TYPES);
+
+const normalizeAddress = (address?: string) => address?.trim().toLowerCase() ?? '';
 
 export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
   onSubmit,
@@ -41,6 +49,10 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
   const [selectedContact, setSelectedContact] = useState<ContactSelection | null>(null);
   const [isContactPickerOpen, setIsContactPickerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSelfTransfer, setIsSelfTransfer] = useState(false);
+  const [selfTransferAcknowledged, setSelfTransferAcknowledged] = useState(false);
+  const recipientFieldId = 'recipient-address';
+  const selfTransferWarningId = 'self-transfer-warning';
   // Translated workflow strings (#292)
   const { t, tv } = useT();
   // Screen-reader status for submission (#307)
@@ -53,8 +65,11 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
     setValue,
     watch,
     reset,
+    clearErrors,
+    trigger,
   } = useForm<SendPaymentRequest>({
     resolver: zodResolver(sendPaymentSchema),
+    shouldFocusError: true,
     defaultValues: {
       tokenType: defaultTokenType,
       memoType: 'none',
@@ -83,6 +98,16 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
 
   const watchedToken = watch('tokenType');
   const watchedMemoType = watch('memoType');
+  const memoTypeRegistration = register('memoType');
+
+  const handleMemoTypeChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+    await memoTypeRegistration.onChange(event);
+    clearErrors(['memo', 'memoType']);
+    setValue('memo', '', { shouldValidate: false });
+    if (event.target.value !== 'none') {
+      await trigger(['memo', 'memoType']);
+    }
+  };
 
   // Check self-transfer on every address field change
   const handleRecipientChange = (value: string) => {
@@ -246,31 +271,21 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
             </label>
             <Input
               id="recipient-address"
-              {...register('recipientAddress')}
+              {...register('recipientAddress', {
+                onChange: (event) => handleRecipientChange(event.target.value),
+              })}
               placeholder="GABCD1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
               className={cn(
-                'font-mono text-sm',
+                'w-full min-w-0 font-mono text-sm',
                 selectedContact && 'bg-blue-500/5 border-blue-500/30'
               )}
               disabled={!!selectedContact}
-            <label
-              htmlFor={recipientFieldId}
-              className="block text-sm font-medium text-gray-300 mb-2"
-            >
-              {t("payment.recipientAddress")}
-            </label>
-            <Input
-              {...register('recipientAddress')}
-              placeholder="GABCD1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-              className={cn(
-                'font-mono text-sm',
-                selectedContact && 'bg-blue-500/5 border-blue-500/30'
-              )}
-              disabled={!!selectedContact}
+              aria-invalid={Boolean(errors.recipientAddress)}
+              aria-describedby={errors.recipientAddress ? `${recipientFieldId}-error` : undefined}
             />
             {errors.recipientAddress && (
               <p
-                id={`${recipientFieldId}-error`}
+                id="recipient-address-error"
                 role="alert"
                 className="mt-1 text-xs text-red-400"
               >
@@ -358,9 +373,12 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
             <div className="space-y-2">
               <select
                 id="memo-type-select"
-                {...register('memoType')}
+                {...memoTypeRegistration}
+                onChange={handleMemoTypeChange}
                 className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 aria-label={t("payment.memoType")}
+                aria-invalid={Boolean(errors.memoType)}
+                aria-describedby={errors.memoType ? 'memo-type-error' : undefined}
               >
                 <option value="none">No Memo</option>
                 <option value="text">Text Memo</option>
@@ -373,6 +391,8 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
                   id="memo-value-input"
                   aria-label={t("payment.memoValue")}
                   {...register('memo')}
+                  aria-invalid={Boolean(errors.memo)}
+                  aria-describedby={errors.memo ? 'memo-value-error' : undefined}
                   placeholder={
                     watchedMemoType === 'text'
                       ? 'Enter memo text (max 28 characters)'
@@ -389,12 +409,12 @@ export const SendPaymentForm: React.FC<SendPaymentFormProps> = ({
               )}
             </div>
             {errors.memo && (
-              <p role="alert" className="mt-1 text-xs text-red-400">
+              <p id="memo-value-error" role="alert" className="mt-1 text-xs text-red-400">
                 {tv(errors.memo.message)}
               </p>
             )}
             {errors.memoType && (
-              <p role="alert" className="mt-1 text-xs text-red-400">
+              <p id="memo-type-error" role="alert" className="mt-1 text-xs text-red-400">
                 {tv(errors.memoType.message)}
               </p>
             )}

@@ -1,4 +1,5 @@
 // Environment configuration for ChenPilot client
+import { CLIENT_VERSION } from './version';
 
 /**
  * Every NEXT_PUBLIC_* value is included in browser bundles and must be
@@ -167,7 +168,7 @@ export const env = {
 
   // Application Configuration
   APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'ChenPilot',
-  APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+  APP_VERSION: CLIENT_VERSION,
   STELLAR_NETWORK: process.env.NEXT_PUBLIC_STELLAR_NETWORK || '',
 
   // Environment

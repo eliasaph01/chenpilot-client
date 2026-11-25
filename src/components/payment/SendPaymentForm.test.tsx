@@ -85,6 +85,31 @@ describe('#344 — SendPaymentForm Component & Conditional Memo UI', () => {
     expect(screen.queryByPlaceholderText(/Enter memo/i)).not.toBeInTheDocument();
   });
 
+  it('focuses an invalid visible memo field and clears its error when memo is disabled', async () => {
+    render(<SendPaymentForm onSubmit={mockOnSubmit} contacts={sampleContacts} />);
+
+    fireEvent.change(screen.getByLabelText(/Recipient Address/i), {
+      target: { value: sampleContacts[0].address },
+    });
+    fireEvent.change(screen.getByLabelText(/Amount/i), {
+      target: { value: '1' },
+    });
+    const memoTypeSelect = screen.getByLabelText(/Memo type/i);
+    fireEvent.change(memoTypeSelect, { target: { value: 'id' } });
+    fireEvent.change(screen.getByPlaceholderText('Enter numeric ID'), {
+      target: { value: 'not-a-number' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Review Payment|Send Payment/i }));
+
+    await waitFor(() => expect(memoTypeSelect).toHaveFocus());
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+
+    fireEvent.change(memoTypeSelect, { target: { value: 'none' } });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/Enter memo/i)).not.toBeInTheDocument();
+  });
+
   it('validates and submits payment when valid data is provided', async () => {
     render(<SendPaymentForm onSubmit={mockOnSubmit} contacts={sampleContacts} />);
 

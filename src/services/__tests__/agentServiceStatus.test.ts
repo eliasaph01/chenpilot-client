@@ -16,6 +16,7 @@ vi.mock('axios', () => ({
 }));
 
 import agentService, { parseStatusMetrics } from '../agentService';
+import { CLIENT_VERSION } from '@/config/version';
 
 const notFound = { message: 'Request failed with status code 404', response: { status: 404 } };
 
@@ -39,6 +40,7 @@ describe('AgentService.getStatus (#271)', () => {
     expect(status).toMatchObject({
       isOnline: true,
       source: 'unavailable',
+      clientVersion: CLIENT_VERSION,
       version: null,
       uptime: null,
       lastActivity: null,

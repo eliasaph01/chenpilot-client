@@ -222,7 +222,7 @@ export default function SettingsPage() {
 
             <div className="space-y-6">
               <section id="settings-profile" aria-labelledby="settings-profile-heading" className="scroll-mt-20 space-y-6">
-                <h2 id="settings-profile-heading" className="sr-only">Profile</h2>
+                <h2 id="settings-profile-heading" tabIndex={-1} className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:bg-black focus:px-2 focus:py-1">Profile</h2>
               {/* Profile Settings */}
               <Card>
                 <div className="p-6">
@@ -301,7 +301,7 @@ export default function SettingsPage() {
               </section>
 
               <section id="settings-appearance" aria-labelledby="settings-appearance-heading" className="scroll-mt-20 space-y-6">
-                <h2 id="settings-appearance-heading" className="sr-only">Appearance & language</h2>
+                <h2 id="settings-appearance-heading" tabIndex={-1} className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:bg-black focus:px-2 focus:py-1">Appearance & language</h2>
               {/* Appearance Settings */}
               <Card>
                 <div className="p-6">
@@ -387,14 +387,14 @@ export default function SettingsPage() {
               </section>
 
               <section id="settings-wallet" aria-labelledby="settings-wallet-heading" className="scroll-mt-20 space-y-6">
-                <h2 id="settings-wallet-heading" className="sr-only">Wallet</h2>
+                <h2 id="settings-wallet-heading" tabIndex={-1} className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:bg-black focus:px-2 focus:py-1">Wallet</h2>
               {/* Stellar Trustlines Management */}
               <TrustlinesPanel />
 
               </section>
 
               <section id="settings-notifications" aria-labelledby="settings-notifications-heading" className="scroll-mt-20 space-y-6">
-                <h2 id="settings-notifications-heading" className="sr-only">Notifications</h2>
+                <h2 id="settings-notifications-heading" tabIndex={-1} className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:bg-black focus:px-2 focus:py-1">Notifications</h2>
               {/* Notifications */}
               <Card>
                 <div className="p-6">
@@ -414,7 +414,7 @@ export default function SettingsPage() {
               </section>
 
               <section id="settings-security" aria-labelledby="settings-security-heading" className="scroll-mt-20 space-y-6">
-                <h2 id="settings-security-heading" className="sr-only">Security</h2>
+                <h2 id="settings-security-heading" tabIndex={-1} className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:bg-black focus:px-2 focus:py-1">Security</h2>
               {/* Security. Sensitive calls also honour server step-up challenges (#255, ADR-0006) */}
               <Card>
                 <div className="p-6">

@@ -16,6 +16,7 @@ vi.mock('@/services/api', () => ({ default: api }));
 
 import AgentStatus, { capabilityNotice, formatUptime } from './AgentStatus';
 import { LOCAL_CAPABILITIES } from '@/services/agentService';
+import { CLIENT_VERSION } from '@/config/version';
 
 const status = {
   isOnline: true,
@@ -109,6 +110,7 @@ describe('AgentStatus dashboard (#271)', () => {
 
     const metrics = await screen.findByTestId('agent-metrics');
     expect(metrics).toHaveTextContent('Version: Unavailable');
+    expect(screen.getByTestId('client-version')).toHaveTextContent(`Client version: ${CLIENT_VERSION}`);
     expect(metrics).toHaveTextContent('Uptime: Unavailable');
     expect(metrics).toHaveTextContent('Connections: Unavailable');
     expect(screen.getByText(/Protocol health is unavailable/)).toBeInTheDocument();

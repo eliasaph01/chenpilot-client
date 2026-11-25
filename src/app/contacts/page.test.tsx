@@ -129,6 +129,16 @@ describe('#343 — ContactsPage Component Tests', () => {
     expect(screen.getByRole('heading', { name: 'Add New Contact' })).toBeInTheDocument();
   });
 
+  it('keeps the full contact address available through an accessible copy action', () => {
+    render(<ContactsPage />);
+
+    expect(screen.getByRole('button', { name: 'Copy full address for Alice Stark' })).toBeInTheDocument();
+    expect(screen.getByLabelText(`Full address: ${sampleContacts[0].address}`)).toHaveAttribute(
+      'title',
+      sampleContacts[0].address,
+    );
+  });
+
   it('aborts the contacts request when the route unmounts', async () => {
     mockGetContacts.mockImplementationOnce(
       () => new Promise(() => {}),

@@ -20,6 +20,7 @@ import {
 import apiService from '@/services/api';
 import { AgentStatus as AgentStatusType, AgentCapabilitiesResult, ServiceStatus } from '@/types/agent';
 import { isCapabilitiesStale } from '@/services/agentService';
+import { CLIENT_VERSION } from '@/config/version';
 
 const UNAVAILABLE = 'Unavailable';
 
@@ -202,6 +203,9 @@ export default function AgentStatus({ className = '', showDetails = false }: Age
           <div className="text-xs text-gray-400" data-testid="agent-metrics">
             Version: {status.version ?? UNAVAILABLE} | Uptime: {formatUptime(status.uptime)} | Connections:{' '}
             {status.activeConnections ?? UNAVAILABLE}
+          </div>
+          <div className="text-xs text-gray-400" data-testid="client-version">
+            Client version: {status.clientVersion ?? CLIENT_VERSION}
           </div>
 
           {status.health && (

@@ -81,6 +81,8 @@ export interface AgentStatus {
   isOnline: boolean;
   /** Where the metrics came from: `GET /status`, or nothing (`unavailable`). */
   source: 'backend' | 'unavailable';
+  /** Client build version, independent of the backend-reported agent version. */
+  clientVersion?: string;
   version: string | null;
   /** Seconds. */
   uptime: number | null;

@@ -143,7 +143,10 @@ test.describe('Wallet Critical Paths (E2E)', () => {
       window.localStorage.setItem('user_data', JSON.stringify(user));
     }, TESTNET_USER);
 
+    await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/contacts');
+    await expect(page.getByRole('button', { name: 'Copy full address for Bob Testnet' })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 
     // Find and click the Add Contact button
     const addContactBtn = page.getByRole('button', { name: /add.*contact/i });
@@ -176,8 +179,8 @@ test.describe('Wallet Critical Paths (E2E)', () => {
 
     await page.goto('/send');
 
-    // Viewport responsiveness check
-    await page.setViewportSize({ width: 1280, height: 720 });
+    // Narrow viewport responsiveness check
+    await page.setViewportSize({ width: 320, height: 720 });
 
     const recipientInput = page.locator('#recipient-address');
     const amountInput = page.locator('#send-amount');
@@ -185,6 +188,7 @@ test.describe('Wallet Critical Paths (E2E)', () => {
 
     await expect(recipientInput).toBeVisible();
     await expect(amountInput).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 
     // Trigger validation error by entering invalid address
     await recipientInput.fill('invalid-address');
@@ -218,9 +222,36 @@ test.describe('Wallet Critical Paths (E2E)', () => {
       window.localStorage.setItem('user_data', JSON.stringify(user));
     }, TESTNET_USER);
 
+    await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/transactions');
 
     // Verify transaction history page renders
     await expect(page.getByRole('heading', { name: /transactions/i })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  });
+
+  test('settings fragments support keyboard focus and browser back at 320px', async ({ page }) => {
+    await page.addInitScript((user) => {
+      window.localStorage.setItem('auth_token', 'mock-testnet-jwt-token');
+      window.localStorage.setItem('user_data', JSON.stringify(user));
+    }, TESTNET_USER);
+
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto('/settings');
+
+    const navigation = page.getByRole('navigation', { name: 'Settings sections' });
+    const profileLink = navigation.getByRole('link', { name: 'Profile' });
+    const securityLink = navigation.getByRole('link', { name: 'Security' });
+    await profileLink.focus();
+    await profileLink.press('Enter');
+    await securityLink.focus();
+    await securityLink.press('Enter');
+    await expect(page).toHaveURL(/#settings-security$/);
+    await expect(page.locator('#settings-security-heading')).toBeFocused();
+
+    await page.goBack();
+    await expect(page).toHaveURL(/#settings-profile$/);
+    await expect(page.locator('#settings-profile-heading')).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   });
 });

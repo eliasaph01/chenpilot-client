@@ -580,8 +580,8 @@ export default function TransactionTable({
         </h2>
 
         {/* Transactions Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="max-w-full overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-[42rem] table-fixed text-sm">
             <thead>
               <tr className="border-b border-gray-800">
                 <th className="text-left py-3 px-4 font-semibold text-gray-300">
@@ -709,14 +709,15 @@ export default function TransactionTable({
                       </span>
                     </td>
 
-                    <td className="py-3 px-4">
+                    <td className="max-w-32 min-w-0 py-3 px-4">
                       <button
                         onClick={(event) => {
                           event.stopPropagation();
                           void handleCopyHash(tx.hash);
                         }}
                         onKeyDown={(event) => event.stopPropagation()}
-                        className="font-mono text-xs text-blue-400 hover:text-blue-300 truncate max-w-xs"
+                        aria-label={`Copy full transaction hash ${tx.hash}`}
+                        className="block w-full max-w-full truncate font-mono text-xs text-blue-400 hover:text-blue-300"
                         type="button"
                         title={tx.hash}
                       >

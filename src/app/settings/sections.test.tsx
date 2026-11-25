@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { dispatch, setTheme } = vi.hoisted(() => ({
@@ -49,6 +49,18 @@ describe('settings sections (#300)', () => {
       expect(target, section.id).not.toBeNull();
       expect(target).toHaveAccessibleName(section.label);
     }
+  });
+
+  it('moves focus to a section heading when navigating to its fragment', async () => {
+    const { container } = render(<SettingsPage />);
+    const nav = screen.getByRole('navigation', { name: 'Settings sections' });
+
+    fireEvent.click(within(nav).getByRole('link', { name: 'Security' }));
+
+    await waitFor(() => {
+      expect(container.querySelector('#settings-security-heading')).toHaveFocus();
+    });
+    expect(window.location.hash).toBe('#settings-security');
   });
 
   it('keeps profile, appearance, notification and security controls in separate sections', () => {

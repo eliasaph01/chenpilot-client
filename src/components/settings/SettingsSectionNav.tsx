@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 /** Navigable settings sections (#300). Ids match the <section> elements on the settings page. */
 export const SETTINGS_SECTIONS = [
@@ -16,6 +16,24 @@ export const SETTINGS_SECTIONS = [
  * horizontally scrollable bar, so it works alongside the app's mobile menu.
  */
 export function SettingsSectionNav() {
+  useEffect(() => {
+    const focusFragmentTarget = () => {
+      const sectionId = window.location.hash.slice(1);
+      if (!sectionId) return;
+
+      document.getElementById(`${sectionId}-heading`)?.focus({ preventScroll: true });
+    };
+
+    focusFragmentTarget();
+    window.addEventListener('hashchange', focusFragmentTarget);
+    window.addEventListener('popstate', focusFragmentTarget);
+
+    return () => {
+      window.removeEventListener('hashchange', focusFragmentTarget);
+      window.removeEventListener('popstate', focusFragmentTarget);
+    };
+  }, []);
+
   return (
     <nav
       aria-label="Settings sections"

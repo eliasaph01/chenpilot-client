@@ -68,6 +68,9 @@ describe('TransactionTable locale-aware formatting', () => {
     expect(screen.getByText('1,234,567.8900000 XLM')).toBeInTheDocument();
     expect(screen.getByText(/^Fee: 100\.0000000 XLM$/)).toBeInTheDocument();
     expect(screen.getByText(/May 15, 2026/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: `Copy full transaction hash ${transactions[0].hash}` }),
+    ).toHaveAttribute('title', transactions[0].hash);
   });
 
   it('re-renders amounts, fees and dates with the newly selected language', () => {

@@ -78,6 +78,27 @@ describe('validateEnv — environment-aware required-var check', () => {
   });
 });
 
+describe('client version source', () => {
+  it('prefers an explicit configured version and otherwise uses package metadata', async () => {
+    const { resolveClientVersion } = await import('./version');
+
+    expect(resolveClientVersion('  2.4.0  ', '0.1.0')).toBe('2.4.0');
+    expect(resolveClientVersion(undefined, '0.1.0')).toBe('0.1.0');
+    expect(resolveClientVersion(undefined, undefined)).toBe('unknown');
+  });
+
+  it('keeps the environment and app configuration on the same version value', async () => {
+    const [{ env }, { APP_CONFIG }, { CLIENT_VERSION }] = await Promise.all([
+      import('./env'),
+      import('../constants'),
+      import('./version'),
+    ]);
+
+    expect(env.APP_VERSION).toBe(CLIENT_VERSION);
+    expect(APP_CONFIG.VERSION).toBe(CLIENT_VERSION);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // validateApiBaseUrl — URL format and presence validation
 // ---------------------------------------------------------------------------

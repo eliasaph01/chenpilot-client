@@ -310,7 +310,7 @@ export default function ContactsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredContacts.map((contact) => (
-              <Card key={contact.id}>
+              <Card key={contact.id} className="min-w-0">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-white">
@@ -347,7 +347,9 @@ export default function ContactsPage() {
                     <div className="flex items-center gap-2">
                       <code
                         dir="ltr"
-                        className="bidi-ltr-isolate text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded flex-1 text-start"
+                        title={contact.address}
+                        aria-label={`Full address: ${contact.address}`}
+                        className="bidi-ltr-isolate min-w-0 flex-1 break-all text-sm bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-start"
                       >
                         <LtrText>{formatAddress(contact.address)}</LtrText>
                       </code>
@@ -355,6 +357,7 @@ export default function ContactsPage() {
                         type="button"
                         variant="ghost"
                         size="sm"
+                        aria-label={`Copy full address for ${contact.name}`}
                         onClick={() => copyToClipboard(contact.address, 'Address')}
                       >
                         <Copy className="h-4 w-4" />
